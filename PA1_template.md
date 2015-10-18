@@ -178,6 +178,33 @@ clean_mean_steps_by_day   <- round(mean(clean_steps_by_day$steps ))
 clean_median_steps_by_day <- round(median(clean_steps_by_day$steps))
 ```
 
-The mean before and after is 9354 and 10766 respectively whilst the media before and after is 10395 and 10766 respectively.
+The mean before and after is 9354 and 10766 respectively whilst the median before and after is 10395 and 10766 respectively.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+Load chron to help us work with days of the week
+
+```r
+library(chron)
+```
+
+Create an extra column, representative of if a date falls on a weekend
+
+```r
+data$weekend <- is.weekend(data$date)
+```
+
+Recreate the aggregate on the basis of the interval and the weekend columns
+
+```r
+mean_interval_steps_by_weekend <- aggregate(data$steps, by = list(data$interval, data$weekend), mean, na.rm=TRUE) 
+names(mean_interval_steps_by_weekend) <- c("interval","weekend", "steps")
+```
+
+Plot data for the weekend
+
+```r
+qplot(interval, steps, data=mean_interval_steps_by_weekend, colour = weekend, geom = "line", xlab = "Average number of steps taken per 5-minute interval ")
+```
+
+![](figure/unnamed-chunk-21-1.png) 
