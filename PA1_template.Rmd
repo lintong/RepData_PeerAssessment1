@@ -5,6 +5,10 @@ output:
     keep_md: true
 ---
 
+Change the path of the figures and set warnings to false
+```{r global_options}
+knitr::opts_chunk$set(fig.path='figure/', warning=FALSE, message=FALSE)
+```
 
 ## Loading and preprocessing the data
 
@@ -92,5 +96,20 @@ sum_missing_values <- sum(is.na(data$steps))
 ```
 The number of missing values is `r sum_missing_values`
 
+```{r}
+
+```
+
+Install zoo in order to help us deal with missing values
+```{r}
+library(zoo)
+```
+
+```{r}
+interpolated_data <- read.zoo(data, index = 2, aggregate = FALSE)
+head(interpolated_data)
+#aggregate(zoo_data$steps, by = list(zoo_data$interval), mean) 
+#zoo_mean_interval_steps <- aggregate(zoo_steps, by = list(data$interval), mean, na.rm=TRUE)
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?

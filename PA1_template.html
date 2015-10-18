@@ -55,6 +55,8 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 </div>
 
 
+<p>Change the path of the figures and set warnings to false</p>
+<pre class="r"><code>knitr::opts_chunk$set(fig.path='figure/', warning=FALSE, message=FALSE)</code></pre>
 <div id="loading-and-preprocessing-the-data" class="section level2">
 <h2>Loading and preprocessing the data</h2>
 <p>Read the CSV data directly from the activity.zip file</p>
@@ -114,6 +116,19 @@ mean_interval_steps_plot </code></pre>
 <p>Calculate the number of missing values</p>
 <pre class="r"><code>sum_missing_values &lt;- sum(is.na(data$steps))</code></pre>
 <p>The number of missing values is 2304</p>
+<p>Install zoo in order to help us deal with missing values</p>
+<pre class="r"><code>library(zoo)</code></pre>
+<pre class="r"><code>interpolated_data &lt;- read.zoo(data, index = 2, aggregate = FALSE)
+head(interpolated_data)</code></pre>
+<pre><code>##            steps interval
+## 2012-10-01    NA        0
+## 2012-10-01    NA        5
+## 2012-10-01    NA       10
+## 2012-10-01    NA       15
+## 2012-10-01    NA       20
+## 2012-10-01    NA       25</code></pre>
+<pre class="r"><code>#aggregate(zoo_data$steps, by = list(zoo_data$interval), mean) 
+#zoo_mean_interval_steps &lt;- aggregate(zoo_steps, by = list(data$interval), mean, na.rm=TRUE)</code></pre>
 </div>
 <div id="are-there-differences-in-activity-patterns-between-weekdays-and-weekends" class="section level2">
 <h2>Are there differences in activity patterns between weekdays and weekends?</h2>

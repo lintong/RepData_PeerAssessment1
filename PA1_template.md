@@ -1,5 +1,10 @@
 # Reproducible Research: Peer Assessment 1
 
+Change the path of the figures and set warnings to false
+
+```r
+knitr::opts_chunk$set(fig.path='figure/', warning=FALSE, message=FALSE)
+```
 
 ## Loading and preprocessing the data
 
@@ -63,7 +68,7 @@ steps_by_day_plot <- ggplot(steps_by_day,aes(x = steps)) +
 steps_by_day_plot
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
+![](figure/unnamed-chunk-7-1.png) 
 
 Calculate the mean and the median
 
@@ -100,7 +105,7 @@ mean_interval_steps_plot <- ggplot(mean_interval_steps,aes(interval,steps)) +
 mean_interval_steps_plot 
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-11-1.png) 
+![](figure/unnamed-chunk-11-1.png) 
 
 The 5 minute interval with the most steps is 835
 
@@ -113,5 +118,33 @@ sum_missing_values <- sum(is.na(data$steps))
 ```
 The number of missing values is 2304
 
+
+
+Install zoo in order to help us deal with missing values
+
+```r
+library(zoo)
+```
+
+
+```r
+interpolated_data <- read.zoo(data, index = 2, aggregate = FALSE)
+head(interpolated_data)
+```
+
+```
+##            steps interval
+## 2012-10-01    NA        0
+## 2012-10-01    NA        5
+## 2012-10-01    NA       10
+## 2012-10-01    NA       15
+## 2012-10-01    NA       20
+## 2012-10-01    NA       25
+```
+
+```r
+#aggregate(zoo_data$steps, by = list(zoo_data$interval), mean) 
+#zoo_mean_interval_steps <- aggregate(zoo_steps, by = list(data$interval), mean, na.rm=TRUE)
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
