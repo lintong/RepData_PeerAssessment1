@@ -1,9 +1,17 @@
 # Reproducible Research: Peer Assessment 1
 
-Change the path of the figures and set warnings to false
+Change the path of the figures, set warnings to false and set the default formatting config
 
 ```r
 knitr::opts_chunk$set(fig.path='figure/', warning=FALSE, message=FALSE)
+
+inline_hook <- function(x){
+  if(is.numeric(x)){
+    paste(format(x,digits=2))
+  }
+}
+
+knitr::knit_hooks$set(inline=inline_hook)
 ```
 
 ## Loading and preprocessing the data
@@ -76,7 +84,7 @@ Calculate the mean and the median
 mean_steps_by_day   <- round(mean(steps_by_day$steps , na.rm = TRUE))
 median_steps_by_day <- round(median(steps_by_day$steps , na.rm = TRUE))
 ```
-The mean steps by day is 9354 whilst the median steps by day is 1.0395\times 10^{4}
+The mean steps by day is 9354 whilst the median steps by day is 10395
 
 ## What is the average daily activity pattern?
 
@@ -170,6 +178,6 @@ clean_mean_steps_by_day   <- round(mean(clean_steps_by_day$steps ))
 clean_median_steps_by_day <- round(median(clean_steps_by_day$steps))
 ```
 
-The mean before and after is 9354 and 1.0766\times 10^{4} respectively whilst the media before and after is 1.0395\times 10^{4} and 1.0766\times 10^{4} respectively.
+The mean before and after is 9354 and 10766 respectively whilst the media before and after is 10395 and 10766 respectively.
 
 ## Are there differences in activity patterns between weekdays and weekends?

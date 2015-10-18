@@ -55,8 +55,16 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 </div>
 
 
-<p>Change the path of the figures and set warnings to false</p>
-<pre class="r"><code>knitr::opts_chunk$set(fig.path='figure/', warning=FALSE, message=FALSE)</code></pre>
+<p>Change the path of the figures, set warnings to false and set the default formatting config</p>
+<pre class="r"><code>knitr::opts_chunk$set(fig.path='figure/', warning=FALSE, message=FALSE)
+
+inline_hook &lt;- function(x){
+  if(is.numeric(x)){
+    paste(format(x,digits=2))
+  }
+}
+
+knitr::knit_hooks$set(inline=inline_hook)</code></pre>
 <div id="loading-and-preprocessing-the-data" class="section level2">
 <h2>Loading and preprocessing the data</h2>
 <p>Read the CSV data directly from the activity.zip file</p>
@@ -92,7 +100,7 @@ steps_by_day_plot</code></pre>
 <p>Calculate the mean and the median</p>
 <pre class="r"><code>mean_steps_by_day   &lt;- round(mean(steps_by_day$steps , na.rm = TRUE))
 median_steps_by_day &lt;- round(median(steps_by_day$steps , na.rm = TRUE))</code></pre>
-<p>The mean steps by day is 9354 whilst the median steps by day is 1.039510^{4}</p>
+<p>The mean steps by day is 9354 whilst the median steps by day is 10395</p>
 </div>
 <div id="what-is-the-average-daily-activity-pattern" class="section level2">
 <h2>What is the average daily activity pattern?</h2>
@@ -143,7 +151,7 @@ clean_steps_by_day_plot</code></pre>
 <p>Recompute the mean and the median</p>
 <pre class="r"><code>clean_mean_steps_by_day   &lt;- round(mean(clean_steps_by_day$steps ))
 clean_median_steps_by_day &lt;- round(median(clean_steps_by_day$steps))</code></pre>
-<p>The mean before and after is 9354 and 1.076610^{4} respectively whilst the media before and after is 1.039510^{4} and 1.076610^{4} respectively.</p>
+<p>The mean before and after is 9354 and 10766 respectively whilst the media before and after is 10395 and 10766 respectively.</p>
 </div>
 <div id="are-there-differences-in-activity-patterns-between-weekdays-and-weekends" class="section level2">
 <h2>Are there differences in activity patterns between weekdays and weekends?</h2>
