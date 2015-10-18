@@ -57,9 +57,9 @@ steps_by_day_plot
 
 Calculate the mean and the median
 ```{r}
-options(scipen=0, digits=2)
-mean_steps_by_day   <- mean(steps_by_day$steps , na.rm = TRUE)
-median_steps_by_day <- median(steps_by_day$steps , na.rm = TRUE)
+
+mean_steps_by_day   <- round(mean(steps_by_day$steps , na.rm = TRUE))
+median_steps_by_day <- round(median(steps_by_day$steps , na.rm = TRUE))
 ```
 The mean steps by day is `r mean_steps_by_day` whilst the median steps by day is `r median_steps_by_day`
 
@@ -96,20 +96,44 @@ sum_missing_values <- sum(is.na(data$steps))
 ```
 The number of missing values is `r sum_missing_values`
 
+Install plyr to help us deal with replacement of missing values
 ```{r}
+library(plyr)
+```
+
+Compensate for missing data and fill in the missing values using the mean of the dataset. 
+```{r}
+replace_element_with_mean <- function(element) {
+  replace(element, is.na(element), mean(element, na.rm = TRUE))
+}
+clean_data <- ddply(data, ~interval, transform, steps = replace_element_with_mean(steps))
+head(clean_data)
+```
+
+
+Produce a sum aggregate by day
+```{r}
+clean_steps_by_day        <- aggregate(clean_data$steps, by = list(clean_data$date), sum) 
+names(clean_steps_by_day) <- c("date","steps")
+```
+
+Plot the result
+```{r}
+clean_steps_by_day_plot   <- ggplot(clean_steps_by_day,aes(x = steps)) +
+       ggtitle("Steps by day with NAs replaced") +
+       xlab("steps") + ylab("count") +
+       geom_histogram(binwidth = 200)
+clean_steps_by_day_plot
 
 ```
 
-Install zoo in order to help us deal with missing values
+Recompute the mean and the median
 ```{r}
-library(zoo)
+clean_mean_steps_by_day   <- round(mean(clean_steps_by_day$steps ))
+clean_median_steps_by_day <- round(median(clean_steps_by_day$steps))
+
 ```
 
-```{r}
-interpolated_data <- read.zoo(data, index = 2, aggregate = FALSE)
-head(interpolated_data)
-#aggregate(zoo_data$steps, by = list(zoo_data$interval), mean) 
-#zoo_mean_interval_steps <- aggregate(zoo_steps, by = list(data$interval), mean, na.rm=TRUE)
-```
+The mean before and after is `r mean_steps_by_day` and `r clean_mean_steps_by_day` respectively whilst the media before and after is `r median_steps_by_day` and `r clean_median_steps_by_day` respectively.
 
 ## Are there differences in activity patterns between weekdays and weekends?

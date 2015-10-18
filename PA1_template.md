@@ -73,11 +73,10 @@ steps_by_day_plot
 Calculate the mean and the median
 
 ```r
-options(scipen=0, digits=2)
-mean_steps_by_day   <- mean(steps_by_day$steps , na.rm = TRUE)
-median_steps_by_day <- median(steps_by_day$steps , na.rm = TRUE)
+mean_steps_by_day   <- round(mean(steps_by_day$steps , na.rm = TRUE))
+median_steps_by_day <- round(median(steps_by_day$steps , na.rm = TRUE))
 ```
-The mean steps by day is 9354.23 whilst the median steps by day is 10395
+The mean steps by day is 9354 whilst the median steps by day is 1.0395\times 10^{4}
 
 ## What is the average daily activity pattern?
 
@@ -118,33 +117,59 @@ sum_missing_values <- sum(is.na(data$steps))
 ```
 The number of missing values is 2304
 
-
-
-Install zoo in order to help us deal with missing values
+Install plyr to help us deal with replacement of missing values
 
 ```r
-library(zoo)
+library(plyr)
 ```
 
-
-```r
-interpolated_data <- read.zoo(data, index = 2, aggregate = FALSE)
-head(interpolated_data)
-```
-
-```
-##            steps interval
-## 2012-10-01    NA        0
-## 2012-10-01    NA        5
-## 2012-10-01    NA       10
-## 2012-10-01    NA       15
-## 2012-10-01    NA       20
-## 2012-10-01    NA       25
-```
+Compensate for missing data and fill in the missing values using the mean of the dataset. 
 
 ```r
-#aggregate(zoo_data$steps, by = list(zoo_data$interval), mean) 
-#zoo_mean_interval_steps <- aggregate(zoo_steps, by = list(data$interval), mean, na.rm=TRUE)
+replace_element_with_mean <- function(element) {
+  replace(element, is.na(element), mean(element, na.rm = TRUE))
+}
+clean_data <- ddply(data, ~interval, transform, steps = replace_element_with_mean(steps))
+head(clean_data)
 ```
+
+```
+##       steps       date interval
+## 1  1.716981 2012-10-01        0
+## 2  0.000000 2012-10-02        0
+## 3  0.000000 2012-10-03        0
+## 4 47.000000 2012-10-04        0
+## 5  0.000000 2012-10-05        0
+## 6  0.000000 2012-10-06        0
+```
+
+
+Produce a sum aggregate by day
+
+```r
+clean_steps_by_day        <- aggregate(clean_data$steps, by = list(clean_data$date), sum) 
+names(clean_steps_by_day) <- c("date","steps")
+```
+
+Plot the result
+
+```r
+clean_steps_by_day_plot   <- ggplot(clean_steps_by_day,aes(x = steps)) +
+       ggtitle("Steps by day with NAs replaced") +
+       xlab("steps") + ylab("count") +
+       geom_histogram(binwidth = 200)
+clean_steps_by_day_plot
+```
+
+![](figure/unnamed-chunk-16-1.png) 
+
+Recompute the mean and the median
+
+```r
+clean_mean_steps_by_day   <- round(mean(clean_steps_by_day$steps ))
+clean_median_steps_by_day <- round(median(clean_steps_by_day$steps))
+```
+
+The mean before and after is 9354 and 1.0766\times 10^{4} respectively whilst the media before and after is 1.0395\times 10^{4} and 1.0766\times 10^{4} respectively.
 
 ## Are there differences in activity patterns between weekdays and weekends?
